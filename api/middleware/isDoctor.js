@@ -1,5 +1,5 @@
-module.exports = (req,resp,next)=>{
-    if(req.userData && req.userData.usertype === 'doctor'){
+module.exports = (req, res, next) => {
+    if(req.userData && req.userData.user_type === 'doctor'){
         next();
     } else {
         res.status(401).json({message: "unauthenticated"})

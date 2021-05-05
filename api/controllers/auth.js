@@ -55,7 +55,6 @@ module.exports = {
 
 
     },
-    //TODO: half assed
     patientLogin: (req, res) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -146,7 +145,7 @@ module.exports = {
         }
         db.query("SELECT * FROM doctor where ? LIMIT 1", { email: req.body.email }, (queryError, queryResult) => {
             if (queryError) {
-                console.log(error)
+                res.status(404).json({ message: "" })
             } else if (queryResult.length < 1) {
                 res.status(401).json({ message: "auth failed" })
             } else {
@@ -178,13 +177,13 @@ module.exports = {
     validate: method => {
         switch (method) {
             case 'patientRegister': return [
-                body('email', 'email invalid/empty').exists().isEmail(),
-                body('password', 'password required').exists(),
-                body('name', 'name required').exists(),
-                body('age', 'age required').exists().isInt(),
-                body('gender', 'gender required').exists().isIn(['M', 'F', 'O', 'U']),
-                body('weight').optional(),
-                body('blood_group').optional().isIn(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
+                // body('email', 'email invalid/empty').exists().isEmail(),
+                // body('password', 'password required').exists(),
+                // body('name', 'name required').exists(),
+                // body('age', 'age required').exists().isInt(),
+                // body('gender', 'gender required').exists().isIn(['M', 'F', 'O', 'U']),
+                // body('weight').optional(),
+                // body('blood_group').optional().isIn(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
             ]
             case 'patientLogin': return [
                 body('email', 'field email is invalid/empty').exists().isEmail(),
