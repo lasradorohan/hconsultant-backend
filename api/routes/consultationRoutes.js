@@ -14,6 +14,7 @@ router.patch('/patient', isPatient, consultation.validate('confirmPatientConsult
 
 // doctor routes
 router.get('/doctor', isDoctor, consultation.validate('getDoctorConsultation'), consultation.getDoctorConsultation)
-router.patch('/doctor', isDoctor, consultation.validate('reviewDoctorConsultation'), consultation.reviewDoctorConsultation)
+router.post('/doctor', isDoctor, consultation.validate('reviewDoctorConsultation'), consultation.reviewDoctorConsultation)
+router.patch('/doctor', isDoctor, consultation.validate('prescribeDoctorConsultation'), consultation.prescribeDoctorConsultation)
 
 module.exports = router

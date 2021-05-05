@@ -93,7 +93,7 @@ module.exports = {
                 consultationID: req.body.consultationID
             }], (queryError, queryResult) => {
                 if (queryError) {
-                   return res.status(500).json({ message: "internal server error" })
+                   return res.status(400).json({ message: "unsuccessful operation/invalid request" })
                 }
                 if (queryResult) {
                     console.log(`query result: ${JSON.stringify(queryResult)}`)
@@ -107,7 +107,7 @@ module.exports = {
                 consultationID: req.body.consultationID
             }, (queryError, queryResult) => {
                 if (queryError) {
-                   return res.status(500).json({ message: "internal server error" })
+                   return res.status(400).json({ message: "unsuccessful operation/invalid request" })
                 }
                 if (queryResult) {
                     console.log(`query result: ${JSON.stringify(queryResult)}`)
@@ -118,9 +118,27 @@ module.exports = {
         }
        
     },
+    prescribeDoctorConsultation: (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(422).json({ errors: errors.array() });
+        }
+        db.query("UPDATE consultation SET ? WHERE ?", 
+            [{ prescription: req.body.prescription }, {consultationID: req.body.consultationID}],
+            (queryError, queryResult) => {
+                if(queryError) {
+                    console.log(queryError)
+                    return res.status(400).json({message: "unsuccessful operation/invalid request"})
+                }
+                if(queryResult){
+                    console.log(`query result: ${JSON.stringify(queryResult)}`)
+                    res.status(200).json({message: "successful"})
+                }
+            }
+        );
+      },
 
     validate: method => {
-        
         switch (method) {
             case 'getPatientConsultation': return []
             case 'requestPatientConsultation': return [
@@ -142,6 +160,10 @@ module.exports = {
                         status != 'approve' ||
                             (('scheduledTimeBegin' in req.body) && ('scheduledTimeEnd' in req.body))
                     )
+            ]
+            case 'prescribeDoctorConsultation': return [
+                body('consultationID', 'consultationID required').exists(),
+                body('prescription', 'prescription required').exists()
             ]
         }
     }
