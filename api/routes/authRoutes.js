@@ -5,11 +5,11 @@ const router = express.Router();
 const authControllers = require('../controllers/authControllers')
 
 //patient routes
-router.post('/patient/register', authControllers.patientRegister)
-router.post('/patient/login', authControllers.patientLogin)
+router.post('/patient/register', authControllers.validate('patientRegister'), authControllers.patientRegister)
+router.post('/patient/login', authControllers.validate('patientLogin'), authControllers.patientLogin)
 
 //doctor routes
-router.post('/doctor/register', authControllers.doctorRegister)
-router.post('/doctor/login', authControllers.doctorLogin)
+router.post('/doctor/register', authControllers.validate('doctorRegister'), authControllers.doctorRegister)
+router.post('/doctor/login', authControllers.validate('doctorLogin'), authControllers.doctorLogin)
 
 module.exports = router
