@@ -2,7 +2,7 @@ const db = require('../models/mySqlConnection')
 const { body, validationResult, Result } = require('express-validator')
 
 module.exports = {
-    getPatientConsultation: (req, res) => {
+    getPatient: (req, res) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             res.status(422).json({ errors: errors.array() });
@@ -18,7 +18,7 @@ module.exports = {
             }
         })
     },
-    requestPatientConsultation: (req, res) => {
+    requestPatient: (req, res) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             res.status(422).json({ errors: errors.array() });
@@ -40,7 +40,7 @@ module.exports = {
             }
         })
     },
-    confirmPatientConsultation: (req, res) => {
+    confirmPatient: (req, res) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             res.status(422).json({ errors: errors.array() });
@@ -62,7 +62,7 @@ module.exports = {
         })
     },
 
-    getDoctorConsultation: (req, res) => {
+    getDoctor: (req, res) => {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             res.status(422).json({ errors: errors.array() });
@@ -78,7 +78,7 @@ module.exports = {
             }
         })
     },
-    reviewDoctorConsultation: (req, res) => {
+    reviewDoctor: (req, res) => {
         
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -118,7 +118,7 @@ module.exports = {
         }
        
     },
-    prescribeDoctorConsultation: (req, res) => {
+    prescribeDoctor: (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
           return res.status(422).json({ errors: errors.array() });
@@ -138,33 +138,31 @@ module.exports = {
         );
       },
 
-    validate: method => {
-        switch (method) {
-            case 'getPatientConsultation': return []
-            case 'requestPatientConsultation': return [
-                body('doctorEmail', 'doctorEmail invalid/empty').exists().isEmail(),
-                body('requestedTimeBegin', 'requested start of period is required').exists(),
-                body('requestedTimeEnd', 'requested end of period is requried').exists()
-            ]
-            case 'confirmPatientConsultation': return [
-                body('consultationID', 'consultationID required').exists(),
-                body('status', 'status request invalid/empty').exists().isIn(['confirm', 'cancel'])
-            ]
-            case 'getDoctorConsultation': return []
-            case 'reviewDoctorConsultation': return [
-                body('consultationID', 'consultationID required').exists(),
-                body('status', 'status request invalid/empty')
-                    .exists()
-                    .isIn(['approve', 'cancel'])
-                    .custom((status, {req}) => 
-                        status != 'approve' ||
-                            (('scheduledTimeBegin' in req.body) && ('scheduledTimeEnd' in req.body))
-                    )
-            ]
-            case 'prescribeDoctorConsultation': return [
-                body('consultationID', 'consultationID required').exists(),
-                body('prescription', 'prescription required').exists()
-            ]
-        }
+    validate: {
+        getPatient = () => [],
+        requestPatient = () => [
+            body('doctorEmail', 'doctorEmail invalid/empty').exists().isEmail(),
+            body('requestedTimeBegin', 'requested start of period is required').exists(),
+            body('requestedTimeEnd', 'requested end of period is requried').exists()
+        ],
+        confirmPatient = () => [
+            body('consultationID', 'consultationID required').exists(),
+            body('status', 'status request invalid/empty').exists().isIn(['confirm', 'cancel'])
+        ],
+        getDoctor = () => [],
+        reviewDoctor = () => [
+            body('consultationID', 'consultationID required').exists(),
+            body('status', 'status request invalid/empty')
+                .exists()
+                .isIn(['approve', 'cancel'])
+                .custom((status, {req}) => 
+                    status != 'approve' ||
+                        (('scheduledTimeBegin' in req.body) && ('scheduledTimeEnd' in req.body))
+                )
+        ],
+        prescribeDoctor = () => [
+            body('consultationID', 'consultationID required').exists(),
+            body('prescription', 'prescription required').exists()
+        ],
     }
 }
