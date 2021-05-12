@@ -63,15 +63,15 @@ module.exports = {
         }
         db.query("SELECT * FROM patient where ? LIMIT 1", { email: req.body.email }, (queryError, queryResult) => {
             if (queryError) {
-                console.log(error)
+                console.log(queryError)
             } else if (queryResult.length < 1) {
-                res.status(401).json({ message: "auth failed" })
+                res.status(401).json({ message: "auth failed", data: "" })
             } else {
                 console.log(`found patient: ${queryResult[0]}`)
                 bcrypt.compare(req.body.password, queryResult[0].password, (compareError, compareResult) => {
                     if (compareError) {
                         console.log(compareError)
-                        res.status(401).json({ message: "auth failed" })
+                        res.status(401).json({ message: "auth failed", data: "" })
                     }
                     if (compareResult) {
                         const token = jwt.sign({
@@ -84,7 +84,7 @@ module.exports = {
                         console.log(`created token: ${JSON.stringify(token)}`)
                         res.status(200).json({
                             message: "sucessful",
-                            token: token
+                            data: token
                         })
                     }
                 })
@@ -166,7 +166,7 @@ module.exports = {
                         console.log(`created token: ${JSON.stringify(token)}`)
                         res.status(200).json({
                             message: "sucessful",
-                            token: token
+                            data: token
                         })
                     }
                 })
@@ -174,33 +174,31 @@ module.exports = {
         })
     },
 
-    validate: method => {
-        switch (method) {
-            case 'patientRegister': return [
-                // body('email', 'email invalid/empty').exists().isEmail(),
-                // body('password', 'password required').exists(),
-                // body('name', 'name required').exists(),
-                // body('age', 'age required').exists().isInt(),
-                // body('gender', 'gender required').exists().isIn(['M', 'F', 'O', 'U']),
-                // body('weight').optional(),
-                // body('blood_group').optional().isIn(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
-            ]
-            case 'patientLogin': return [
-                body('email', 'field email is invalid/empty').exists().isEmail(),
-                body('password', 'password required').exists()
-            ]
-            case 'doctorRegister': return [
-                body('email', 'field email is invalid/empty').exists().isEmail(),
-                body('password', 'password required').exists(),
-                body('name', 'name required').exists(),
-                body('age').optional().isInt(),
-                body('gender').optional(),
-                body('bio').optional()
-            ]
-            case 'doctorLogin': return [
-                body('email', 'email invalid/empty').exists().isEmail(),
-                body('password', 'password required').exists()
-            ]
-        }
+    validate: {
+        patientRegister: [
+            body('email', 'email invalid/empty').exists().isEmail(),
+            body('password', 'password required').exists(),
+            body('name', 'name required').exists(),
+            body('age', 'age required').exists().isInt(),
+            body('gender', 'gender required').exists().isIn(['M', 'F', 'O', 'U']),
+            body('weight').optional(),
+            body('blood_group').optional().isIn(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
+        ],
+        patientLogin: [
+            body('email', 'field email is invalid/empty').exists().isEmail(),
+            body('password', 'password required').exists()
+        ],
+        doctorRegister: [
+            body('email', 'field email is invalid/empty').exists().isEmail(),
+            body('password', 'password required').exists(),
+            body('name', 'name required').exists(),
+            body('age').optional().isInt(),
+            body('gender').optional(),
+            body('bio').optional()
+        ],
+        doctorLogin: [
+            body('email', 'email invalid/empty').exists().isEmail(),
+            body('password', 'password required').exists()
+        ]
     }
 }

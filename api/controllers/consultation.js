@@ -1,5 +1,5 @@
 const db = require('../models/mySqlConnection')
-const { body, validationResult, Result } = require('express-validator')
+const { body, validationResult} = require('express-validator')
 
 module.exports = {
     getPatient: (req, res) => {
@@ -8,13 +8,17 @@ module.exports = {
             res.status(422).json({ errors: errors.array() });
             return;
         }
-        db.query("SELECT * FROM consultation WHERE ?", { patientEmail: req.userData.email }, (queryError, queryResult) => {
+        db.query("SELECT "
+        +"consultationID, status, requestedTimeBegin, requestedTimeEnd, scheduledTimeBegin, scheduledTimeEnd, doctorEmail AS email, name "
+        +"FROM consultation INNER JOIN doctor ON doctorEmail=email WHERE ?",
+        { patientEmail: req.userData.email }, (queryError, queryResult) => {
             if (queryError) {
+                console.log(queryError)
                 return res.status(404).json({ message: "not found try sigining in again" })
             }
             if (queryResult) {
                 console.log(`querried consltations: ${JSON.stringify(queryResult)}`)
-                res.status(200).json({message: "successful", consultations: queryResult})
+                res.status(200).json({message: "successful", array: queryResult})
             }
         })
     },
@@ -36,7 +40,7 @@ module.exports = {
             }
             if(queryResult){
                 console.log(`added consultation request: ${JSON.stringify(queryResult)}`)
-                return res.status(201).json({message: "successful", consultationID: queryResult.insertId})
+                return res.status(201).json({message: "successful", data: queryResult.insertId})
             }
         })
     },
@@ -74,12 +78,11 @@ module.exports = {
             }
             if (queryResult) {
                 console.log(`querried consltations: ${JSON.stringify(queryResult)}`)
-                res.status(200).json({message: "successful", consultations: queryResult})
+                res.status(200).json({message: "successful", array: queryResult})
             }
         })
     },
     reviewDoctor: (req, res) => {
-        
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.array() })
@@ -139,18 +142,18 @@ module.exports = {
       },
 
     validate: {
-        getPatient = () => [],
-        requestPatient = () => [
+        getPatient: [],
+        requestPatient: [
             body('doctorEmail', 'doctorEmail invalid/empty').exists().isEmail(),
             body('requestedTimeBegin', 'requested start of period is required').exists(),
             body('requestedTimeEnd', 'requested end of period is requried').exists()
         ],
-        confirmPatient = () => [
+        confirmPatient: [
             body('consultationID', 'consultationID required').exists(),
             body('status', 'status request invalid/empty').exists().isIn(['confirm', 'cancel'])
         ],
-        getDoctor = () => [],
-        reviewDoctor = () => [
+        getDoctor: [],
+        reviewDoctor: [
             body('consultationID', 'consultationID required').exists(),
             body('status', 'status request invalid/empty')
                 .exists()
@@ -160,7 +163,7 @@ module.exports = {
                         (('scheduledTimeBegin' in req.body) && ('scheduledTimeEnd' in req.body))
                 )
         ],
-        prescribeDoctor = () => [
+        prescribeDoctor: [
             body('consultationID', 'consultationID required').exists(),
             body('prescription', 'prescription required').exists()
         ],

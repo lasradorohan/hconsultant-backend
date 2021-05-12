@@ -6,8 +6,9 @@ const isAuth = require('../middleware/isAuth')
 const isDoctor = require('../middleware/isDoctor')
 const isPatient = require('../middleware/isPatient')
 
-// patient routes
 router.use(isAuth)
+
+// patient routes
 router.get('/patient', isPatient, consult.validate.getPatient, consult.getPatient)
 router.post('/patient', isPatient, consult.validate.requestPatient, consult.requestPatient)
 router.patch('/patient', isPatient, consult.validate.confirmPatient, consult.confirmPatient)

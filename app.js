@@ -3,7 +3,8 @@ const express = require('express')
 const morgan = require('morgan')
 const authRoutes = require('./api/routes/authRoutes.js')
 const consultationRoutes = require('./api/routes/consultationRoutes')
-
+const chatRoutes = require('./api/routes/chatRoutes')
+const miscRoutes = require('./api/routes/miscRoutes')
 const app = express()
 
 //import routes
@@ -23,7 +24,8 @@ app.use((req, res, next) => {
 
 app.use(authRoutes)
 app.use('/consult', consultationRoutes)
-
+app.use('/chat', chatRoutes)
+app.use(miscRoutes)
 
 
 module.exports = app
