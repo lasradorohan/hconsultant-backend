@@ -120,8 +120,8 @@ module.exports = {
                         if ('gender' in req.body) {
                             newDoctor.gender = req.body.gender
                         }
-                        if ('bio' in req.body) {
-                            newDoctor.bio = req.body.bio
+                        if ('area' in req.body) {
+                            newDoctor.area = req.body.area
                         }
                         db.query("INSERT INTO doctor SET ?", [newDoctor], (error, result) => {
                             console.log(`query result: ${JSON.stringify({ error: error, result: result })}`)
@@ -194,7 +194,7 @@ module.exports = {
             body('name', 'name required').exists(),
             body('age').optional().isInt(),
             body('gender').optional(),
-            body('bio').optional()
+            body('area').optional()
         ],
         doctorLogin: [
             body('email', 'email invalid/empty').exists().isEmail(),
